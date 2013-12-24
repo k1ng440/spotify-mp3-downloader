@@ -114,25 +114,13 @@ io.sockets.on('connection', function (socket_) {
 	socket.on('login', function (result, callback) {
 		
 		spotify_web.login(result.username, result.password, function(err, spotify) {
-		
-			var success = false;
-			var message = 'Invalid username/password!';
-		
 			if( typeof spotify != 'undefined' ) {
-				if( spotify.accountType == 'premium' ) {
-					config.username = result.username;
-					config.password = result.password;	
-					success = true;	
-				} else {
-					message = 'You need a Premium subscribtion!';
-				}
+				config.username = result.username;
+				config.password = result.password;			
 			}
 			
 			if( typeof callback == 'function' ){
-				callback({
-					success: success,
-					message: message
-				});
+				callback( typeof spotify != 'undefined' );
 			}
 		});
 	});
@@ -246,8 +234,9 @@ var downloadTrack = function( uri, callback ){
 			}
 			artists = artists.join(' / ');
 			
+			
 			if( playlist_folder ) {
-				var albumpath = __dirname + '/mp3/' + fixTrackName(playlist_folder) + '/';
+				var albumpath = __dirname + '/mp3/' + playlist_folder + '/';
 								
 				// generate folder if it does not exist
 				if( !fs.existsSync(albumpath) ) {
@@ -312,6 +301,9 @@ var downloadTrack = function( uri, callback ){
 }
 
 var fixTrackName = function( input ) {
-	var regEx = new RegExp('[,/\:*?""<>|]', 'g');
-	return input.replace(regEx, '_');
+	var output = input;
+		output = output.replace(/\//g, ' - ');
+		output = output.replace(/\:/g, ' - ');
+	
+	return output;
 }
