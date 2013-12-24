@@ -198,7 +198,7 @@
 		<h1>Spotify MP3 Downloader</h1>
 	
 		<div id="tracks">
-			<p>Drag tracks from Spotify to this window</p>
+			<p>Drag tracks or a playlist from Spotify to this window</p>
 		</div>
 		
 		<div id="go" class="button">Download 'em all!</div>
@@ -215,8 +215,13 @@
 		
 		socket.on('done', function(result){
 		
-			var filename = result.filepath.split('/');
-				filename = '<span style="opacity:0.6">' + filename[ filename.length - 3 ] + '/</span><span style="opacity:0.8">' + filename[ filename.length - 2 ] + '/</span><span style="opacity:1">' + filename[ filename.length -1 ] + '</span>';
+			if( result.filepath.indexOf('.mp3') > -1 ) {		
+				var filename = result.filepath.split('/');
+					filename = '<span style="opacity:0.6">' + filename[ filename.length - 3 ] + '/</span><span style="opacity:0.8">' + filename[ filename.length - 2 ] + '/</span><span style="opacity:1">' + filename[ filename.length -1 ] + '</span>';
+			} else {
+				var filename = result.filepath.split('/');
+					filename = '<span style="opacity:0.8">' + filename[ filename.length - 2 ] + '/</span><span style="opacity:1">' + filename[ filename.length -1 ] + '</span>';
+			}
 		
 			document.getElementById(result.id).className = 'done';
 			document.getElementById(result.id).innerHTML = filename;
