@@ -3,6 +3,8 @@ spotify-mp3-downloader
 
 This is a node.js program that is controlled by a web interface. It downloads .mp3 files from Spotify and ID3-tags them accordingly.
 
+It supports multiple tracks at the same time, or one playlist. It downloads tracks in 160kbps.
+
 **You need a Spotify Premium account to use this.**
 
 # How to use:
@@ -11,7 +13,8 @@ This is a node.js program that is controlled by a web interface. It downloads .m
 2. (Only if you run OS X) Install id3lib `brew install id3lib` (If you don't have brew yet: http://brew.sh)
 3. Run `node app.js` from the command line
 This will open your browser. If it does not, navigate to http://localhost:1717.
-4. Drag spotify tracks from the Spotify desktop client to the website
+4. Log in using your account. If you only have a Facebook account, generate a password here: https://www.spotify.com/account/set-device-password/
+5. Drag spotify tracks (or one playlist) from the Spotify desktop client to the website
 
 # Screenshots
 ![](http://i.imgur.com/4jSZ7HX.png)
