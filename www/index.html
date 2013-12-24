@@ -173,6 +173,22 @@
 				color: rgba(191,137,0,1);
 				text-shadow: 0px 1px 0 rgba(0,0,0,0.1);
 			}
+			#auth p.text {
+				color: #333;
+			}
+				#auth p.text a {
+					color: #666;
+					text-decoration: none;
+				}
+				#auth p.text a:hover {
+					text-decoration: underline;
+				}
+			#login {
+				transition: all 0.2s;
+			}
+			#login.disabled {
+				opacity: 0.5;
+			}
 		</style>
 		
 	</head>
@@ -180,7 +196,9 @@
 	
 		<div id="overlay">
 			<form id="auth">
-				<p>Please log in with your <strong>Spotify Premium</strong> account.</p>
+				<center>
+					<p>Please log in with your <br/><strong>Spotify Premium</strong> account.</p>
+				</center>
 				<div>
 					<label for="username">Username</label>
 					<input id="username" type="text" value="" />
@@ -192,6 +210,9 @@
 				<center>
 					<input id="login" type="submit" class="button button-small" value="Login" />
 				</center>
+				<p class="text">
+					<small>If you only have a Facebook account, generate a password <a target="_blank" href="https://www.spotify.com/account/set-device-password/">here</a>.</small>
+				</p>
 			</form>
 		</div>
 		
@@ -277,14 +298,21 @@
 		document.getElementById('auth').addEventListener('submit', function(e){
 			e.preventDefault();
 			
+			var classes = document.getElementById('login').className;
+			
+			if( classes.indexOf('disabled') > -1  ) return false;
+			
+			document.getElementById('login').className = classes + ' disabled';
+			
 			socket.emit('login', {
 				username: document.getElementById('username').value,
 				password: document.getElementById('password').value
 			}, function(result){
-				if(result) {
+				if(result.success) {
 					hideLogin();					
 				} else {
-					alert('Could not log in!');
+					alert('Login failed:\n\n' + result.message);
+					document.getElementById('login').className = classes;
 				}
 			});
 			
