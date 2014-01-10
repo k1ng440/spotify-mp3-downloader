@@ -4,7 +4,7 @@
  */
 
 var util = require('./util');
-var Track = require('./schemas').metadata['spotify.metadata.proto.Track'];
+var Track = require('./schemas').build('metadata','Track');
 var PassThrough = require('stream').PassThrough;
 var debug = require('debug')('spotify-web:track');
 
@@ -28,6 +28,18 @@ Object.defineProperty(Track.prototype, 'uri', {
   enumerable: true,
   configurable: true
 });
+
+/**
+ * Track Preview URL getter
+ */
+Object.defineProperty(Track.prototype, 'previewUrl', {
+  get: function () {
+    var previewUrlBase = 'http://d318706lgtcm8e.cloudfront.net/mp3-preview/'
+    return this.preview.length && (previewUrlBase + util.gid2id(this.preview[0].fileId));
+  },
+  enumerable: true,
+  configurable: true
+})
 
 /**
  * Loads all the metadata for this Track instance. Useful for when you get an only
@@ -94,7 +106,49 @@ Track.prototype.play = function () {
 
   function response (res) {
     debug('HTTP/%s %s', res.httpVersion, res.statusCode);
-    res.pipe(stream);
+    if (res.statusCode == 200) {
+      res.pipe(stream);
+    } else {
+      stream.emit('error', new Error('HTTP Status Code ' + res.statusCode));
+    }
+  }
+
+  // return stream immediately so it can be .pipe()'d
+  return stream;
+};
+
+/**
+ * Begins playing a preview of the track, returns a Readable stream that outputs MP3 data.
+ *
+ * @api public
+ */
+
+Track.prototype.playPreview = function () {
+  var spotify = this._spotify;
+  var stream = new PassThrough();
+  var previewUrl = this.previewUrl;
+
+  if (!previewUrl) {
+    process.nextTick(function() {
+      stream.emit('error', new Error('Track does not have preview available'));
+    });
+    return stream;
+  }
+
+  debug('GET %s', previewUrl);
+  var req = spotify.agent.get(previewUrl)
+    .set({ 'User-Agent': spotify.userAgent })
+    .end()
+    .request();
+  req.on('response', response);
+
+  function response (res) {
+    debug('HTTP/%s %s', res.httpVersion, res.statusCode);
+    if (res.statusCode == 200) {
+      res.pipe(stream);
+    } else {
+      stream.emit('error', new Error('HTTP Status Code ' + res.statusCode));
+    }
   }
 
   // return stream immediately so it can be .pipe()'d
