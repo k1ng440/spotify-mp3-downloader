@@ -251,7 +251,7 @@ var downloadTrack = function( uri, callback ){
 								
 				// generate folder if it does not exist
 				if( !fs.existsSync(albumpath) ) {
-					fs.mkdir( albumpath );
+					fs.mkdirSync( albumpath );
 				}
 				
 			} else {			
@@ -260,7 +260,7 @@ var downloadTrack = function( uri, callback ){
 								
 				// generate folder if it does not exist
 				if( !fs.existsSync(artistpath) ) {
-					fs.mkdir( artistpath );
+					fs.mkdirSync( artistpath );
 				}
 				
 				// generate the albumpath
@@ -268,7 +268,7 @@ var downloadTrack = function( uri, callback ){
 								
 				// generate folder if it does not exist
 				if( !fs.existsSync(albumpath) ) {
-					fs.mkdir( albumpath );
+					fs.mkdirSync( albumpath );
 				}
 			}				
 			
